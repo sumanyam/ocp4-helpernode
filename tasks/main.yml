@@ -115,7 +115,8 @@
       url: "{{ ocp_bios}}"
       dest: /var/www/html/install/bios.raw.gz
       mode: 0555
-      
+    when: not custom_tasks
+
   - name: Start firewalld service
     systemd:
       name: firewalld
@@ -162,6 +163,7 @@
       group: "{{ group }}"
     notify:
       - restart nfs
+    when: not custom_tasks
 
   - name: Copy NFS export conf file
     copy:
@@ -169,6 +171,7 @@
       dest: /etc/exports
     notify:
       - restart nfs
+    when: not custom_tasks
 
   - name: Create TFTP config
     file:
@@ -316,6 +319,7 @@
       owner: root
       group: root
       mode: 0666
+    when: not custom_tasks
 
   - name: Copying over nfs-provisioner deployment
     template:
@@ -324,6 +328,7 @@
       owner: root
       group: root
       mode: 0666
+    when: not custom_tasks
 
   - name: Copying over nfs-provisioner storageclass
     copy:
@@ -332,6 +337,7 @@
       owner: root
       group: root
       mode: 0666
+    when: not custom_tasks
 
   - name: Copying over nfs-provisioner setup script
     copy:
@@ -340,40 +346,47 @@
       owner: root
       group: root
       mode: 0555
+    when: not custom_tasks
 
   - name: Copying over a sample PVC file for NFS
     copy:
       src: ../files/registry-pvc.yaml
       dest: /usr/local/src/registry-pvc.yaml
       mode: '0555'
+    when: not custom_tasks
 
   - name: Downloading OCP4 client
     get_url:
       url: "{{ ocp_client }}"
       dest: /usr/local/src/openshift-client-linux.tar.gz
+    when: not custom_tasks
 
   - name: Downloading OCP4 Installer
     get_url:
       url: "{{ ocp_installer }}"
       dest: /usr/local/src/openshift-install-linux.tar.gz
+    when: not custom_tasks
 
   - name: Unarchiving OCP4 client
     unarchive:
       src: /usr/local/src/openshift-client-linux.tar.gz
       dest: /usr/local/bin
       remote_src: yes
+    when: not custom_tasks
 
   - name: Unarchiving OCP4 Installer
     unarchive:
       src: /usr/local/src/openshift-install-linux.tar.gz
       dest: /usr/local/bin
       remote_src: yes
+    when: not custom_tasks
 
   - name: Removing files that are not needed
     file:
       path: /usr/local/bin/README.md
       state: absent
-
+    when: not custom_tasks
+    
   - name: Downloading filetranspiler source
     git:
       repo: https://github.com/ashcrow/filetranspiler
